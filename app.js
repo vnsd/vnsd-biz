@@ -4,46 +4,29 @@
  *
  */
 
-var express = require('express');
-var log = require('morgan')('dev');
-var bodyParser = require('body-parser');
+const express = require('express')
+const bodyParser = require('body-parser')
+const app = express()
+const db = require('./api/startup/startups.dao.pg')
+const port = 3000
 
-var properties = require('./config/properties');
-var db = require('./config/database');
-//startup routes
-var startupsRoutes = require('./api/startup/startups.routes');
-var app = express();
+app.use(bodyParser.json())
+app.use(
+    bodyParser.urlencoded({
+        extended: true,
+    })
+)
 
-//configure bodyparser
-var bodyParserJSON = bodyParser.json();
-var bodyParserURLEncoded = bodyParser.urlencoded({extended: true});
+app.get('/', (request, response) => {
+    response.json({info: 'Node.js, Express, and Postgres API'})
+})
 
-//initialise express router
-var router = express.Router();
+app.get('/users', db.getUsers)
+app.get('/users/:id', db.getUserById)
+app.post('/users', db.createUser)
+app.put('/users/:id', db.updateUser)
+app.delete('/users/:id', db.deleteUser)
 
-// call the database connectivity function
-db();
-
-// configure app.use()
-app.use(log);
-app.use(bodyParserJSON);
-app.use(bodyParserURLEncoded);
-
-// Error handling
-app.use(function (req, res, next) {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Credentials", "true");
-    res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
-    res.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Origin,Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers,Authorization");
-    next();
-});
-
-// use express router
-app.use('/startup', router);
-//call startups routing
-startupsRoutes(router);
-
-// intialise server
-app.listen(properties.PORT, function (req, res) {
-    console.log('Server is running on ${properties.PORT} port.');
+app.listen(port, () => {
+    console.log(`App running on port ${port}.`)
 })
