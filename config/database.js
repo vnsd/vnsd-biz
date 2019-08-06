@@ -11,7 +11,7 @@ var mongoose = require('mongoose');
 var chalk = require('chalk');
 
 //require database URL from properties file
-var dbURL = require('./properties').DB;
+var dbURL = process.env.MONGODB_URI || 'mongodb://localhost:27017/vnsd';
 
 var connected = chalk.bold.cyan;
 var error = chalk.bold.yellow;
