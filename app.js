@@ -45,6 +45,6 @@ startupsRoutes(router);
 
 // intialise server
 app.listen(port, () => {
-    console.log('App running on port ${port}.');
+    console.log('App is running on port ${port}.');
 })
 module.exports = app;
